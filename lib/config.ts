@@ -8,7 +8,9 @@ import staticConfigBaseLibPath = require("./common/static-config-base");
 $injector.register("config", {
 	CI_LOGGER: false,
 	DEBUG: process.env.NATIVESCRIPT_DEBUG,
-	TYPESCRIPT_COMPILER_OPTIONS: { }
+	TYPESCRIPT_COMPILER_OPTIONS: {},
+	PROXY_TO_FIDDLER: true,
+	FIDDLER_HOSTNAME: '127.0.0.1'
 });
 
 export class StaticConfig extends staticConfigBaseLibPath.StaticConfigBase implements IStaticConfig {
