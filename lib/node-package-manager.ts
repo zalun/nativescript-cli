@@ -9,6 +9,8 @@ import shell = require("shelljs");
 import helpers = require("./common/helpers");
 import constants = require("./constants");
 import options = require("./common/options");
+import resolve = require("resolve");
+
 
 export class NodePackageManager implements INodePackageManager {
 	private static NPM_LOAD_FAILED = "Failed to retrieve data from npm. Please try again a little bit later.";
@@ -103,6 +105,16 @@ export class NodePackageManager implements INodePackageManager {
 				}
 				return options.frameworkPath;
 			} else {
+
+				try {
+					// Search for locally installed modules first.
+					// TRICKY: We assume the "main" file exists and it is in the root of the package.
+					var packageFile = resolve.sync(packageName, { basedir: process.cwd() });
+					var packageDir = path.dirname(packageFile);
+					return packageDir;
+				} catch (ex) {
+				}
+
 				version = version || this.getLatestVersion(packageName).wait();
 				var packagePath = this.getCachedPackagePath(packageName, version);
 				if (!this.isPackageCached(packagePath).wait()) {
