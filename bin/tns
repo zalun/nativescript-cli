@@ -1,4 +1,26 @@
-#!/bin/sh
+#!/usr/bin/env node
+'use strict';
 
-AB_DIR="`dirname \"$0\"`"
-node "$AB_DIR/nativescript.js" "$@"
+process.title = 'tns';
+
+var resolve = require('resolve').sync;
+
+var basedir = process.cwd();
+console.log("basedir: " + basedir);
+
+var nativescript_path;
+try {
+  // Search for locally installed nativescript.
+  nativescript_path = resolve('nativescript', {basedir: basedir});
+} catch (ex) {
+  try {
+    basedir = __dirname;
+    // Otherwise use the one where this command is installed.
+    nativescript_path = resolve('./../lib/nativescript-cli', {basedir: basedir});
+  } catch (ex) {
+    console.log("Nativescript not found!");
+  }
+}
+
+console.log("Found nativescript: " + nativescript_path);
+require(nativescript_path);
