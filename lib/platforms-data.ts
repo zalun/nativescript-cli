@@ -5,11 +5,13 @@ export class PlatformsData implements IPlatformsData {
 	private platformsData : { [index: string]: any } = {};
 
 	constructor($androidProjectService: IPlatformProjectService,
-		$iOSProjectService: IPlatformProjectService) {
+		$iOSProjectService: IPlatformProjectService,
+		$firefoxOSProjectService: IPlatformProjectService) {
 
 		this.platformsData = {
 			ios: $iOSProjectService.platformData,
-			android: $androidProjectService.platformData
+			android: $androidProjectService.platformData,
+			firefoxos: $firefoxOSProjectService.platformData
 		}
 	}
 
