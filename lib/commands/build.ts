@@ -37,3 +37,17 @@ export class BuildAndroidCommand extends BuildCommandBase implements  ICommand {
 	}
 }
 $injector.registerCommand("build|android", BuildAndroidCommand);
+
+export class BuildFirefoxOSCommand extends BuildCommandBase implements  ICommand {
+	constructor($platformService: IPlatformService,
+				private $platformsData: IPlatformsData) {
+		super($platformService);
+	}
+
+	public allowedParameters: ICommandParameter[] = [];
+
+	public execute(args: string[]): IFuture<void> {
+		return this.executeCore([this.$platformsData.availablePlatforms.FirefoxOS]);
+	}
+}
+$injector.registerCommand("build|firefoxos", BuildFirefoxOSCommand);

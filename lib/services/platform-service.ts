@@ -73,7 +73,9 @@ export class PlatformService implements IPlatformService {
 				npmOptions["version"] = version;
 			}
 
+			// this.$logger.trace("FXOS DEBUG: %s", this.$options);
 			var downloadedPackagePath = this.$npm.install(packageToInstall, npmOptions).wait();
+			this.$logger.trace("FXOS DEBUG: package downloaded");
 			var frameworkDir = path.join(downloadedPackagePath, constants.PROJECT_FRAMEWORK_FOLDER_NAME);
 			frameworkDir = path.resolve(frameworkDir);
 
@@ -91,6 +93,7 @@ export class PlatformService implements IPlatformService {
 
 	private addPlatformCore(platformData: IPlatformData, frameworkDir: string): IFuture<void> {
 		return (() => {
+			this.$logger.trace('FXOS DEBUG: addPlatformCore - createProject %s', frameworkDir );
 			platformData.platformProjectService.createProject(platformData.projectRoot, frameworkDir).wait();
 			var installedVersion = this.$fs.readJson(path.join(frameworkDir, "../", "package.json")).wait().version;
 

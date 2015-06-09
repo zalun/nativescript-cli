@@ -26,7 +26,8 @@ export class PlatformsData implements IPlatformsData {
 	public get availablePlatforms(): any {
 		return {
 			iOS: "ios",
-			Android: "android"
+			Android: "android",
+			FirefoxOS: "firefoxos"
 		};
 	}
 }

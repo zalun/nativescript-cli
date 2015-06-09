@@ -40,6 +40,7 @@ $injector.requireCommand("debug|android", "./commands/debug");
 $injector.requireCommand("prepare", "./commands/prepare");
 $injector.requireCommand("build|ios", "./commands/build");
 $injector.requireCommand("build|android", "./commands/build");
+$injector.requireCommand("build|firefoxos", "./commands/build");
 $injector.requireCommand("deploy", "./commands/deploy");
 $injector.requireCommand("emulate|android", "./commands/emulate");
 $injector.requireCommand("emulate|ios", "./commands/emulate");

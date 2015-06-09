@@ -6,6 +6,9 @@ import path = require("path");
 import util = require("util");
 import Future = require("fibers/future");
 import constants = require("../constants");
+import helpers = require("../common/helpers");
+import fs = require("fs");
+import os = require("os");
 
 class FirefoxOSProjectService implements IPlatformProjectService {
 
@@ -29,7 +32,7 @@ class FirefoxOSProjectService implements IPlatformProjectService {
 			var projectRoot = path.join(this.$projectData.platformsDir, "firefoxos");
 
 			this._platformData = {
-				frameworkPackageName: "tns-android",
+				frameworkPackageName: "tns-firefoxos",
 				normalizedPlatformName: "FirefoxOS",
 				appDestinationDirectoryPath: path.join(projectRoot, "assets"),
 				appResourcesDestinationDirectoryPath: path.join(projectRoot, "res"),
@@ -59,7 +62,9 @@ class FirefoxOSProjectService implements IPlatformProjectService {
 
 	public createProject(projectRoot: string, frameworkDir: string): IFuture<void> {
 		return (() => {
-			console.log('FXOS DEBUG: createProject');
+			this.$logger.trace('FXOS DEBUG: createProject');
+			this.$logger.trace(projectRoot);
+			this.$logger.trace(frameworkDir);
 			this.$fs.ensureDirectoryExists(projectRoot).wait();
 			// var newTarget = this.getLatestValidAndroidTarget(frameworkDir).wait();
 			// var versionNumber = _.last(newTarget.split("-"));
@@ -72,7 +77,7 @@ class FirefoxOSProjectService implements IPlatformProjectService {
 			// } else {
 			// 	this.copyResValues(projectRoot, frameworkDir, versionNumber).wait();
 			// 	this.copy(projectRoot, frameworkDir, "assets libs", "-R").wait();
-			// 	this.copy(projectRoot, frameworkDir, ".project AndroidManifest.xml project.properties custom_rules.xml", "-f").wait();
+			this.copy(projectRoot, frameworkDir, "manifest.webapp", "-f").wait();
 			// }
 
 			// if(newTarget) {
@@ -93,12 +98,11 @@ class FirefoxOSProjectService implements IPlatformProjectService {
 			console.log('FXOS DEBUG: interpolateData');
 			// Interpolate the activity name and package
 			var manifestPath = path.join(projectRoot, "manifest.webapp");
-			var safeActivityName = this.$projectData.projectName.replace(/\W/g, '');
-			shell.sed('-i', /__PACKAGE__/, this.$projectData.projectId, manifestPath);
-			shell.sed('-i', /__APILEVEL__/, this.getTarget(projectRoot).wait().split('-')[1], manifestPath);
-
+			// var safeActivityName = this.$projectData.projectName.replace(/\W/g, '');
+			shell.sed('-i', /__NAME__/, this.$projectData.projectName, manifestPath);
+			// shell.sed('-i', /__PACKAGE__/, this.$projectData.projectId, manifestPath);
+			// shell.sed('-i', /__APILEVEL__/, this.getTarget(projectRoot).wait().split('-')[1], manifestPath);
 			// var stringsFilePath = path.join(projectRoot, 'res', 'values', 'strings.xml');
-			// shell.sed('-i', /__NAME__/, this.$projectData.projectName, stringsFilePath);
 			// shell.sed('-i', /__TITLE_ACTIVITY__/, this.$projectData.projectName, stringsFilePath);
 			// shell.sed('-i', /__NAME__/, this.$projectData.projectName, path.join(projectRoot, '.project'));
 
@@ -116,7 +120,7 @@ class FirefoxOSProjectService implements IPlatformProjectService {
 
 	public buildProject(projectRoot: string): IFuture<void> {
 		return (() => {
-			console.log('FXOS DEBUG: buildProject');
+			this.$logger.trace('FXOS DEBUG: buildProject (%s)', projectRoot);
 			var buildConfiguration = this.$options.release ? "release" : "debug";
 			// var args = this.getAntArgs(buildConfiguration, projectRoot);
 			// this.spawn('ant', args).wait();
@@ -149,6 +153,13 @@ class FirefoxOSProjectService implements IPlatformProjectService {
 			// if (this.$fs.exists(libProjProp).wait()) {
 			// 	this.updateProjectReferences(platformData.projectRoot, targetLibPath);
 			// }
+		}).future<void>()();
+	}
+
+	private copy(projectRoot: string, frameworkDir: string, files: string, cpArg: string): IFuture<void> {
+		return (() => {
+			var paths = files.split(' ').map(p => path.join(frameworkDir, p));
+			shell.cp(cpArg, paths, projectRoot);
 		}).future<void>()();
 	}
 
